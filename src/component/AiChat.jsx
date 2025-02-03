@@ -6,6 +6,7 @@ const AiChat = () => {
   const [loading, setLoading] = useState(false);
   const [sessionId, setSessionId] = useState("");
   const [chatArea, setChatArea] = useState();
+  const baseUrl = "https://azelawai.onrender.com/"
   const handleAskClick = async () => {
     const data = {
       question: ask,
@@ -22,7 +23,7 @@ const AiChat = () => {
             return
         }
         setLoading(true);
-      const response = await axios.post("http://localhost:3333/ask", data);
+      const response = await axios.post(`${baseUrl}ask`, data);
       if (response.status === 200) {
         const data = response?.data;
 
@@ -43,7 +44,7 @@ const AiChat = () => {
     const fetchApi = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:3333/history/${sessionId}`
+          `${baseUrl}history/${sessionId}`
         );
         if (response.status === 200) {
           const data = response?.data;
