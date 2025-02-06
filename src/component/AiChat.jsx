@@ -6,61 +6,108 @@ const AiChat = () => {
   const [ask, setAsk] = useState("");
   const [loading, setLoading] = useState(false);
   const [sessionId, setSessionId] = useState("");
-  const [chatArea, setChatArea] = useState();
-  const baseUrl = "https://azelawai.onrender.com/";
+  const [chatArea, setChatArea] = useState([]);
+  const [isDisabledBtn,setIsDisabledBtn] = useState(false)
+  // const baseUrl = "https://azelawai.onrender.com/";
+  const baseUrl = "http://localhost:3333/"
   const handleAskClick = async () => {
     const data = {
-      question: ask,
+      question: ask, 
       session_id: sessionId,
     };
-    try {
-      if (ask === "" || !ask.trim()) {
+    
+    try{
+
+      if(ask ==="" || !ask.trim()){
         Swal.fire({
           icon: "error",
-          title: "Oops...",
-          text: "Boş sual olmaz!",
-        });
-        return;
+           title: "Oops...",
+           text: "Boş sual olmaz!",
+        })
+        return; 
       }
-      setLoading(true);
-      const response = await axios.post(`${baseUrl}ask`, data);
-      if (response.status === 200) {
-        const data = response?.data;
+      setIsDisabledBtn(true)
+      setLoading(true)
+      
+      const response  = await fetch(`${baseUrl}ask`,{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify(data)
+      })
+      const reader = response.body.getReader()
+      const decoder = new TextDecoder()
 
-        setLoading(false);
-        setAsk("");
-        setSessionId(data.sessionId);
+      let fullResponse  = ""
+      let index = 0
+      setChatArea(prev=>[...(prev||[]),{userMessage:ask,botMessage:""}])
+      while(true){
+        const {value,done} = await reader.read()
+        if (done) break;
+
+        let chunkText = decoder.decode(value)
+        if(index ==0){
+          const firstLineIndex = chunkText.indexOf("\n")
+          const getSessionId = chunkText.slice(0,firstLineIndex)
+          const parsedSessionId = JSON.parse(getSessionId)
+          
+          setSessionId(parsedSessionId.sessionId)
+          
+          chunkText = chunkText.slice(firstLineIndex+1)
+        }      
+          
+
+        
+        fullResponse+=chunkText
+        setChatArea(prev=>{
+          const updatedMessages = [...prev]
+          updatedMessages[updatedMessages.length-1].botMessage = fullResponse
+          return updatedMessages
+        })
+        
+        
+        index++
+        
       }
-    } catch (error) {
+      setAsk("")
+    }
+
+    catch (error) {
       Swal.fire({
         icon: "error",
         title: "Oops...",
-        text: "Boş sual olmaz!",
+        text: error.message
       });
+    }finally{
+      setLoading(false)
+      setIsDisabledBtn(false)
+      
     }
   };
-
   useEffect(() => {
     const fetchApi = async () => {
       try {
-        const response = await axios.get(`${baseUrl}history/${sessionId}`);
-        if (response.status === 200) {
-          const data = response?.data;
+        if(sessionId){
+          const response = await axios.get(`${baseUrl}history/${sessionId}`);
+          if (response.status === 200) {
+            const data = response?.data;
+            
+  
+            setChatArea(data.data);
+          }
 
-          setChatArea(data);
         }
       } catch (error) {}
     };
 
     fetchApi();
-  }, [loading]);
+  }, []);
 
   return (
     <div className="w-full ">
       <div className="min-h-[60vh]">
-        {chatArea?.data.map((data) => {
+        {chatArea?.map((data,index) => {
           return (
-            <div className="p-5 " key={data._id}>
+            <div className="p-5 " key={index}>
               <div className="flex items-start w-full gap-2.5">
                 <div className="flex flex-col w-full  leading-1.5 shadow p-4 border-gray-200 bg-gray-100 rounded-e-xl rounded-es-xl dark:bg-gray-700">
                   <div className="flex items-center space-x-2 rtl:space-x-reverse">
@@ -120,6 +167,7 @@ const AiChat = () => {
         <button
           className="cursor-pointer p-2 mt-2 w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
           onClick={() => handleAskClick()}
+          disabled={isDisabledBtn}
         >
           Ask
         </button>
