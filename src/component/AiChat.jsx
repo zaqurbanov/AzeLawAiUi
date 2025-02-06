@@ -8,8 +8,8 @@ const AiChat = () => {
   const [sessionId, setSessionId] = useState("");
   const [chatArea, setChatArea] = useState([]);
   const [isDisabledBtn,setIsDisabledBtn] = useState(false)
-  // const baseUrl = "https://azelawai.onrender.com/";
-  const baseUrl = "http://localhost:3333/"
+  const baseUrl = "https://azelawai.onrender.com/";
+  // const baseUrl = "http://localhost:3333/"
   const handleAskClick = async () => {
     const data = {
       question: ask, 
