@@ -8,9 +8,21 @@ const AiChat = () => {
   const [sessionId, setSessionId] = useState("");
   const [chatArea, setChatArea] = useState([]);
   const [isDisabledBtn,setIsDisabledBtn] = useState(false)
+  const [displayedMessage,setDisplayedMessage] = useState("")
+  const [isTyping,setIsTyping] = useState(false)
+  
   const baseUrl = "https://azelawai.onrender.com/";
   // const baseUrl = "http://localhost:3333/"
+
+
+
+
+  const formatBoldText = (text)=>{
+    return text.replace(/\*\*(.*?)\*\*/g, "<strong style='color: #1E40AF'>$1</strong>");
+  }
   const handleAskClick = async () => {
+
+    
     const data = {
       question: ask, 
       session_id: sessionId,
@@ -109,7 +121,7 @@ const AiChat = () => {
           return (
             <div className="p-5 " key={index}>
               <div className="flex items-start w-full gap-2.5">
-                <div className="flex flex-col w-full  leading-1.5 shadow p-4 border-gray-200 bg-gray-100 rounded-e-xl rounded-es-xl dark:bg-gray-700">
+                <div className="flex flex-col w-full  leading-1.5 shadow p-4 border-gray-200  bg-gray-100 rounded-e-xl rounded-es-xl dark:bg-gray-700">
                   <div className="flex items-center space-x-2 rtl:space-x-reverse">
                     <span className="text-sm font-semibold text-gray-900 dark:text-white">
                       YOU
@@ -134,8 +146,11 @@ const AiChat = () => {
                       11:46
                     </span>
                   </div>
-                  <p className="text-sm font-normal py-2.5 text-gray-900 dark:text-white">
-                    {data?.botMessage}
+                  <p className="text-sm font-semibold py-2.5 text-gray-900 dark:text-white"
+                    dangerouslySetInnerHTML={{__html:formatBoldText(data?.botMessage)}}
+                  >
+                    
+                    {/* {data?.botMessage} */}
                   </p>
                     
                 </div>
@@ -160,12 +175,13 @@ const AiChat = () => {
           onChange={(e) => {
             setAsk(e.target.value);
           }}
+          disabled={isDisabledBtn}
           rows={5}
           className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
           placeholder="Write your thoughts here... "
         />
         <button
-          className="cursor-pointer p-2 mt-2 w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+          className={`cursor-pointer p-2 mt-2 w-full  text-white ${isDisabledBtn ?"bg-blue-300" :"bg-blue-700"}  hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800`}
           onClick={() => handleAskClick()}
           disabled={isDisabledBtn}
         >
