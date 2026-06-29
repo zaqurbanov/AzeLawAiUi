@@ -173,8 +173,8 @@ const AiChat = () => {
   const bottomRef = useRef(null);
   const textareaRef = useRef(null);
 
-  // const baseUrl = "https://azelawai.onrender.com/";
-  const baseUrl = "http://localhost:3333/";
+  const baseUrl = "https://azelawai.onrender.com/";
+  // const baseUrl = "http://localhost:3333/";
 
   const showToast = (message, type = "error") => setToast({ message, type });
   const closeToast = () => setToast(null);
