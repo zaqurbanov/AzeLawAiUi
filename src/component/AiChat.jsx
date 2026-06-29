@@ -2,51 +2,90 @@ import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
 
 // ─── Toast ────────────────────────────────────────────────────────────────────
-function Toast({ message, type, onClose }) {
+function Toast({ message, detail, type, onClose, onRetry }) {
+  const [showDetail, setShowDetail] = useState(false);
+
   useEffect(() => {
-    const t = setTimeout(onClose, 4500);
+    const duration = detail ? 7000 : type === "warning" ? 6000 : 5000;
+    const t = setTimeout(onClose, duration);
     return () => clearTimeout(t);
-  }, [onClose]);
+  }, [onClose, detail, type]);
 
-  const colors =
-    type === "success"
-      ? "bg-green-50 border-green-200 text-green-800"
-      : type === "warning"
-      ? "bg-yellow-50 border-yellow-200 text-yellow-800"
-      : "bg-red-50 border-red-200 text-red-800";
-
-  const icons = {
-    success: (
-      <svg className="w-4 h-4 text-green-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-      </svg>
-    ),
-    warning: (
-      <svg className="w-4 h-4 text-yellow-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
-      </svg>
-    ),
-    error: (
-      <svg className="w-4 h-4 text-red-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-      </svg>
-    ),
+  const palette = {
+    success: {
+      wrap: "bg-green-50 border-green-200",
+      title: "text-green-900",
+      detail: "text-green-700 bg-green-100 border-green-200",
+      btn: "text-green-600 hover:bg-green-100",
+      icon: <svg className="w-4 h-4 text-green-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>,
+    },
+    warning: {
+      wrap: "bg-yellow-50 border-yellow-200",
+      title: "text-yellow-900",
+      detail: "text-yellow-700 bg-yellow-100 border-yellow-200",
+      btn: "text-yellow-600 hover:bg-yellow-100",
+      icon: <svg className="w-4 h-4 text-yellow-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" /></svg>,
+    },
+    error: {
+      wrap: "bg-red-50 border-red-200",
+      title: "text-red-900",
+      detail: "text-red-700 bg-red-100 border-red-200",
+      btn: "text-red-600 hover:bg-red-100",
+      icon: <svg className="w-4 h-4 text-red-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>,
+    },
   };
 
+  const c = palette[type] ?? palette.error;
+
   return (
-    <div className="fixed top-4 right-4 z-50 animate-slide-in-right max-w-sm w-full">
-      <div className={`flex items-start gap-3 px-4 py-3 rounded-xl border shadow-lg ${colors}`}>
-        {icons[type] ?? icons.error}
-        <p className="text-sm font-medium leading-snug flex-1">{message}</p>
-        <button
-          onClick={onClose}
-          className="text-current opacity-50 hover:opacity-100 transition-opacity mt-0.5"
-          aria-label="Bağla"
-        >
-          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
+    <div className="fixed top-4 right-4 z-50 animate-slide-in-right w-full max-w-sm">
+      <div className={`rounded-xl border shadow-lg overflow-hidden ${c.wrap}`}>
+        {/* Main row */}
+        <div className="flex items-start gap-3 px-4 py-3">
+          {c.icon}
+          <p className={`text-sm font-semibold leading-snug flex-1 ${c.title}`}>{message}</p>
+          <div className="flex items-center gap-1 shrink-0">
+            {detail && (
+              <button
+                onClick={() => setShowDetail((v) => !v)}
+                className={`text-xs px-1.5 py-0.5 rounded font-medium transition-colors ${c.btn}`}
+                aria-label="Ətraflı"
+              >
+                {showDetail ? "Gizlə" : "Ətraflı"}
+              </button>
+            )}
+            <button
+              onClick={onClose}
+              className={`p-0.5 rounded transition-colors opacity-60 hover:opacity-100 ${c.btn}`}
+              aria-label="Bağla"
+            >
+              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        {/* Detail panel */}
+        {showDetail && detail && (
+          <div className={`px-4 pb-3 animate-fade-in`}>
+            <pre className={`text-xs leading-relaxed font-mono px-3 py-2 rounded-lg border whitespace-pre-wrap break-all ${c.detail}`}>
+              {detail}
+            </pre>
+          </div>
+        )}
+
+        {/* Retry button */}
+        {onRetry && (
+          <div className={`px-4 pb-3 ${showDetail ? "" : "pt-0"}`}>
+            <button
+              onClick={() => { onClose(); onRetry(); }}
+              className={`text-xs font-semibold underline underline-offset-2 transition-opacity hover:opacity-70 ${c.title}`}
+            >
+              Yenidən cəhd et →
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -56,17 +95,17 @@ function Toast({ message, type, onClose }) {
 function TypingIndicator() {
   return (
     <div className="flex items-end gap-3 animate-fade-up">
-      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center shrink-0 shadow-sm">
+      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-indigo-500 flex items-center justify-center shrink-0 shadow-md shadow-blue-500/30">
         <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
         </svg>
       </div>
-      <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl rounded-bl-sm px-4 py-3 shadow-sm">
+      <div className="backdrop-blur-md bg-white/10 border border-white/15 rounded-2xl rounded-bl-sm px-4 py-3 shadow-lg">
         <div className="flex items-center gap-1.5 h-5">
           {[0, 1, 2].map((i) => (
             <span
               key={i}
-              className="w-2 h-2 rounded-full bg-gray-400 dark:bg-gray-500 block"
+              className="w-2 h-2 rounded-full bg-blue-300/70 block"
               style={{ animation: `typing-dot 1.2s ease-in-out infinite`, animationDelay: `${i * 0.2}s` }}
             />
           ))}
@@ -79,23 +118,23 @@ function TypingIndicator() {
 // ─── Empty state ──────────────────────────────────────────────────────────────
 function EmptyState() {
   return (
-    <div className="flex flex-col items-center justify-center h-full py-16 text-center animate-fade-in">
-      <div className="w-20 h-20 rounded-2xl bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center mb-5 shadow-sm">
-        <svg className="w-10 h-10 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+    <div className="flex flex-col items-center justify-center flex-1 py-16 text-center animate-fade-in">
+      <div className="w-20 h-20 rounded-2xl backdrop-blur-md bg-white/10 border border-white/15 flex items-center justify-center mb-5 shadow-xl shadow-black/20">
+        <svg className="w-10 h-10 text-blue-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
         </svg>
       </div>
-      <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+      <h3 className="text-lg font-bold text-white mb-2 tracking-tight">
         Azərbaycan Hüquq Assistanı
       </h3>
-      <p className="text-sm text-gray-500 dark:text-gray-400 max-w-xs leading-relaxed">
+      <p className="text-sm text-white/50 max-w-xs leading-relaxed">
         Hüquqi suallarınızı Azərbaycan qanunvericiliyi əsasında cavablandırıram. Sualınızı aşağıya yazın.
       </p>
       <div className="mt-6 flex flex-wrap gap-2 justify-center max-w-sm">
         {["Əmək müqaviləsi", "Mülkiyyət hüququ", "Ailə hüququ"].map((hint) => (
           <span
             key={hint}
-            className="px-3 py-1.5 text-xs font-medium bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 rounded-full border border-blue-100 dark:border-blue-800"
+            className="px-3 py-1.5 text-xs font-medium backdrop-blur-sm bg-white/10 text-blue-200 rounded-full border border-white/15 hover:bg-white/15 transition-colors cursor-default"
           >
             {hint}
           </span>
@@ -113,13 +152,13 @@ function UserBubble({ message, index }) {
       style={{ animationDelay: `${index * 40}ms` }}
     >
       <div className="max-w-[78%]">
-        <div className="bg-blue-600 text-white px-4 py-3 rounded-2xl rounded-br-sm shadow-sm">
+        <div className="bg-gradient-to-br from-blue-500 to-indigo-500 text-white px-4 py-3 rounded-2xl rounded-br-sm shadow-lg shadow-blue-500/25">
           <p className="text-sm leading-relaxed whitespace-pre-wrap">{message}</p>
         </div>
-        <p className="text-xs text-gray-400 dark:text-gray-500 text-right mt-1 mr-1">Siz</p>
+        <p className="text-xs text-white/30 text-right mt-1 mr-1">Siz</p>
       </div>
-      <div className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center shrink-0 shadow-sm">
-        <svg className="w-4 h-4 text-gray-500 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+      <div className="w-8 h-8 rounded-full backdrop-blur-sm bg-white/15 border border-white/20 flex items-center justify-center shrink-0">
+        <svg className="w-4 h-4 text-white/70" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
         </svg>
       </div>
@@ -129,32 +168,31 @@ function UserBubble({ message, index }) {
 
 function BotBubble({ message, index }) {
   const formatBoldText = (text) =>
-    text.replace(/\*\*(.*?)\*\*/g, "<strong class='text-blue-800 dark:text-blue-300 font-semibold'>$1</strong>");
+    text.replace(/\*\*(.*?)\*\*/g, "<strong class='text-blue-200 font-semibold'>$1</strong>");
 
   return (
     <div
       className="flex items-end gap-3 animate-fade-up"
       style={{ animationDelay: `${index * 40 + 20}ms` }}
     >
-      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center shrink-0 shadow-sm">
+      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-indigo-500 flex items-center justify-center shrink-0 shadow-md shadow-blue-500/30">
         <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
         </svg>
       </div>
       <div className="max-w-[78%]">
-        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 px-4 py-3 rounded-2xl rounded-bl-sm shadow-sm">
+        <div className="backdrop-blur-md bg-white/10 border border-white/15 px-4 py-3 rounded-2xl rounded-bl-sm shadow-lg shadow-black/20">
           {message ? (
             <p
-              className="text-sm leading-relaxed text-gray-800 dark:text-gray-100 whitespace-pre-wrap"
+              className="text-sm leading-relaxed text-white/90 whitespace-pre-wrap"
               dangerouslySetInnerHTML={{ __html: formatBoldText(message) }}
             />
           ) : (
-            <div className="flex gap-1.5 h-5 items-center">
-              <div className="w-16 h-3 bg-gray-200 dark:bg-gray-700 rounded animate-[shimmer_1.6s_linear_infinite] bg-[length:200%_100%] bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 dark:from-gray-700 dark:via-gray-600 dark:to-gray-700" />
-            </div>
+            <div className="h-4 w-24 rounded bg-white/15 animate-[shimmer_1.6s_linear_infinite] bg-[length:200%_100%]"
+              style={{ backgroundImage: "linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent)" }} />
           )}
         </div>
-        <p className="text-xs text-gray-400 dark:text-gray-500 mt-1 ml-1">LAW AI</p>
+        <p className="text-xs text-white/30 mt-1 ml-1">LAW AI</p>
       </div>
     </div>
   );
@@ -176,7 +214,8 @@ const AiChat = () => {
   const baseUrl = "https://azelawai.onrender.com/";
   // const baseUrl = "http://localhost:3333/";
 
-  const showToast = (message, type = "error") => setToast({ message, type });
+  const showToast = (message, type = "error", detail = null, onRetry = null) =>
+    setToast({ message, type, detail, onRetry });
   const closeToast = () => setToast(null);
 
   useEffect(() => {
@@ -200,15 +239,36 @@ const AiChat = () => {
 
     setChatArea((prev) => [...prev, { userMessage, botMessage: "" }]);
 
+    const controller = new AbortController();
+    // 90s hard timeout — Render cold start üçün kifayətdir
+    const hardTimeout = setTimeout(() => controller.abort(), 90000);
+    // 8s sonra hələ cavab gəlməsə — istifadəçini xəbərdar et
+    const warnTimeout = setTimeout(() => {
+      showToast("Server yüklənir, bir az gözləyin...", "warning");
+    }, 8000);
+
     try {
       const response = await fetch(`${baseUrl}ask`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
+        signal: controller.signal,
       });
 
+      clearTimeout(warnTimeout);
+
       if (!response.ok) {
-        throw new Error(`Server xətası: ${response.status} ${response.statusText}`);
+        let serverMsg = "";
+        try {
+          const errBody = await response.json();
+          serverMsg = errBody.error ?? errBody.message ?? JSON.stringify(errBody);
+        } catch {
+          serverMsg = await response.text().catch(() => "");
+        }
+        const err = new Error(`HTTP ${response.status} ${response.statusText}`);
+        err.status = response.status;
+        err.serverMsg = serverMsg;
+        throw err;
       }
 
       const reader = response.body.getReader();
@@ -245,21 +305,51 @@ const AiChat = () => {
         chunkIndex++;
       }
     } catch (error) {
-      // Remove the empty bot bubble if nothing was streamed
+      clearTimeout(warnTimeout);
+
+      // Boş bot bubble-ı sil
       setChatArea((prev) => {
         const last = prev[prev.length - 1];
         if (last && !last.botMessage) return prev.slice(0, -1);
         return prev;
       });
 
-      const isNetworkError = error instanceof TypeError;
-      showToast(
-        isNetworkError
-          ? "Serverə qoşulmaq mümkün olmadı. İnternet bağlantınızı yoxlayın."
-          : error.message || "Gözlənilməz xəta baş verdi. Yenidən cəhd edin.",
-        "error"
-      );
+      if (error.name === "AbortError") {
+        console.error("[LAW AI] Timeout:", { url: `${baseUrl}ask`, timeout: "90s" });
+        showToast(
+          "Zaman aşımı — server 90s ərzində cavab vermədi",
+          "error",
+          "AbortError: Server 90 saniyə ərzində heç bir cavab göndərmədi.\nRender free tier ilk sorğuda 30–60s yüklənir.",
+          handleAskClick
+        );
+      } else if (error instanceof TypeError) {
+        console.error("[LAW AI] Şəbəkə xətası:", error.message);
+        showToast(
+          "Şəbəkə xətası — serverə çatmaq mümkün olmadı",
+          "error",
+          `TypeError: ${error.message}\n\nURL: ${baseUrl}ask\nSəbəb: CORS, internet kəsilməsi, və ya server offline.`,
+          handleAskClick
+        );
+      } else if (error.status) {
+        console.error("[LAW AI] HTTP xəta:", { status: error.status, serverMsg: error.serverMsg });
+        showToast(
+          `Server xətası — ${error.message}`,
+          "error",
+          error.serverMsg
+            ? `Server cavabı:\n${error.serverMsg}`
+            : `HTTP ${error.status} — server xəta qaytardı, body boşdur.`
+        );
+      } else {
+        console.error("[LAW AI] Gözlənilməz xəta:", error);
+        showToast(
+          "Gözlənilməz xəta baş verdi",
+          "error",
+          `${error.name}: ${error.message}${error.stack ? "\n\n" + error.stack.split("\n").slice(0, 4).join("\n") : ""}`,
+          handleAskClick
+        );
+      }
     } finally {
+      clearTimeout(hardTimeout);
       setLoading(false);
       setIsDisabled(false);
       setTimeout(() => textareaRef.current?.focus(), 50);
@@ -287,37 +377,53 @@ const AiChat = () => {
   }, []);
 
   return (
-    <div className="flex flex-col h-screen bg-gray-50 dark:bg-gray-950 w-full">
+    <div className="relative flex flex-col h-screen w-full overflow-hidden">
+
+      {/* ── Animated gradient background ── */}
+      <div className="absolute inset-0 -z-10 bg-gradient-to-br from-blue-950 via-indigo-900 to-slate-900" />
+      <div className="absolute inset-0 -z-10 opacity-40"
+        style={{ backgroundImage: "radial-gradient(ellipse at 20% 50%, #3b82f640 0%, transparent 60%), radial-gradient(ellipse at 80% 20%, #6366f140 0%, transparent 60%)" }} />
+      {/* subtle grid */}
+      <div className="absolute inset-0 -z-10 opacity-10"
+        style={{ backgroundImage: "linear-gradient(#ffffff18 1px, transparent 1px), linear-gradient(90deg, #ffffff18 1px, transparent 1px)", backgroundSize: "40px 40px" }} />
+
       {/* Toast */}
       {toast && (
-        <Toast message={toast.message} type={toast.type} onClose={closeToast} />
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          detail={toast.detail}
+          onRetry={toast.onRetry}
+          onClose={closeToast}
+        />
       )}
 
-      {/* Header */}
-      <header className="shrink-0 flex items-center gap-3 px-5 h-16 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 shadow-sm">
-        <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center shadow-sm">
+      {/* ── Header (glass) ── */}
+      <header className="shrink-0 flex items-center gap-3 px-5 h-16
+        backdrop-blur-xl bg-white/10 border-b border-white/10 shadow-lg shadow-black/20">
+        <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-400 to-indigo-500 flex items-center justify-center shadow-md shadow-blue-500/30">
           <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
           </svg>
         </div>
         <div>
-          <h1 className="text-sm font-semibold text-gray-900 dark:text-white leading-tight">LAW AI</h1>
-          <p className="text-xs text-gray-500 dark:text-gray-400 leading-tight">Azərbaycan Hüquq Assistanı</p>
+          <h1 className="text-sm font-bold text-white leading-tight tracking-wide">LAW AI</h1>
+          <p className="text-xs text-blue-200/70 leading-tight">Azərbaycan Hüquq Assistanı</p>
         </div>
-        <div className="ml-auto flex items-center gap-1.5">
-          <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-          <span className="text-xs text-gray-500 dark:text-gray-400">Onlayn</span>
+        <div className="ml-auto flex items-center gap-2">
+          <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-sm shadow-emerald-400/60 animate-pulse" />
+          <span className="text-xs text-white/50 font-medium">Onlayn</span>
         </div>
       </header>
 
-      {/* Messages */}
-      <main className="flex-1 overflow-y-auto px-4 py-6 space-y-5">
-        <div className="max-w-3xl mx-auto w-full h-full flex flex-col">
+      {/* ── Messages ── */}
+      <main className="flex-1 overflow-y-auto px-4 py-6">
+        <div className="max-w-3xl mx-auto w-full flex flex-col gap-5">
           {chatArea.length === 0 && !loading ? (
             <EmptyState />
           ) : (
             chatArea.map((item, i) => (
-              <div key={i} className="space-y-5">
+              <div key={i} className="flex flex-col gap-5">
                 <UserBubble message={item.userMessage} index={i} />
                 {item.botMessage !== undefined && (
                   <BotBubble message={item.botMessage} index={i} />
@@ -326,46 +432,39 @@ const AiChat = () => {
             ))
           )}
           {loading && chatArea.length > 0 && !chatArea[chatArea.length - 1]?.botMessage && (
-            <div className="mt-5">
-              <TypingIndicator />
-            </div>
+            <TypingIndicator />
           )}
           <div ref={bottomRef} />
         </div>
       </main>
 
-      {/* Input area */}
-      <footer className="shrink-0 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 px-4 py-4">
+      {/* ── Input area (glass) ── */}
+      <footer className="shrink-0 px-4 py-4 backdrop-blur-xl bg-white/8 border-t border-white/10">
         <div className="max-w-3xl mx-auto w-full space-y-2">
           {inputError && (
-            <div className="flex items-center gap-1.5 text-xs text-red-600 dark:text-red-400 animate-fade-in px-1">
+            <div className="flex items-center gap-1.5 text-xs text-red-300 animate-fade-in px-1">
               <svg className="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
               {inputError}
             </div>
           )}
-          <div
-            className={`flex items-end gap-3 bg-gray-50 dark:bg-gray-800 rounded-2xl border transition-all duration-200 px-4 py-3 ${
-              inputError
-                ? "border-red-400 dark:border-red-500 ring-2 ring-red-100 dark:ring-red-900/30"
-                : isDisabled
-                ? "border-gray-200 dark:border-gray-700 opacity-60"
-                : "border-gray-200 dark:border-gray-700 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-100 dark:focus-within:ring-blue-900/30"
-            }`}
-          >
+          <div className={`flex items-end gap-3 backdrop-blur-md rounded-2xl border transition-all duration-200 px-4 py-3 ${
+            inputError
+              ? "bg-red-500/10 border-red-400/50 ring-2 ring-red-400/20"
+              : isDisabled
+              ? "bg-white/5 border-white/10 opacity-60"
+              : "bg-white/10 border-white/15 focus-within:border-blue-400/50 focus-within:ring-2 focus-within:ring-blue-400/20 focus-within:bg-white/12"
+          }`}>
             <textarea
               ref={textareaRef}
               value={ask}
-              onChange={(e) => {
-                setAsk(e.target.value);
-                if (inputError) setInputError("");
-              }}
+              onChange={(e) => { setAsk(e.target.value); if (inputError) setInputError(""); }}
               onKeyDown={handleKeyDown}
               disabled={isDisabled}
               rows={1}
               placeholder="Hüquqi sualınızı yazın… (Enter — göndər, Shift+Enter — yeni sətir)"
-              className="flex-1 bg-transparent text-sm text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 resize-none outline-none leading-relaxed max-h-36 overflow-y-auto disabled:cursor-not-allowed"
+              className="flex-1 bg-transparent text-sm text-white placeholder-white/35 resize-none outline-none leading-relaxed max-h-36 overflow-y-auto disabled:cursor-not-allowed"
               style={{ minHeight: "24px" }}
               onInput={(e) => {
                 e.target.style.height = "auto";
@@ -376,10 +475,10 @@ const AiChat = () => {
               onClick={handleAskClick}
               disabled={isDisabled}
               aria-label="Göndər"
-              className={`shrink-0 w-9 h-9 rounded-xl flex items-center justify-center transition-all duration-200 active:scale-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 ${
+              className={`shrink-0 w-9 h-9 rounded-xl flex items-center justify-center transition-all duration-200 active:scale-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent ${
                 isDisabled || !ask.trim()
-                  ? "bg-gray-200 dark:bg-gray-700 text-gray-400 cursor-not-allowed"
-                  : "bg-blue-600 text-white hover:bg-blue-700 shadow-sm hover:shadow-md"
+                  ? "bg-white/10 text-white/30 cursor-not-allowed"
+                  : "bg-gradient-to-br from-blue-500 to-indigo-500 text-white shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50 hover:scale-105"
               }`}
             >
               {loading ? (
@@ -391,7 +490,7 @@ const AiChat = () => {
               )}
             </button>
           </div>
-          <p className="text-xs text-gray-400 dark:text-gray-600 text-center">
+          <p className="text-xs text-white/25 text-center">
             LAW AI məlumat məqsədli cavablar verir. Rəsmi hüquqi məsləhət üçün vəkilə müraciət edin.
           </p>
         </div>

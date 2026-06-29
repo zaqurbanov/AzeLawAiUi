@@ -25,16 +25,16 @@ function WelcomeModal({ onClose }) {
   const techs = ['React', 'Node.js', 'AI / LLM', 'Tailwind CSS', 'REST API', 'Streaming']
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
-      <div className="bg-white dark:bg-gray-900 rounded-3xl shadow-2xl border border-gray-200 dark:border-gray-700 max-w-md w-full animate-scale-in overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-fade-in">
+      <div className="backdrop-blur-xl bg-white/10 border border-white/20 rounded-3xl shadow-2xl shadow-black/40 max-w-md w-full animate-scale-in overflow-hidden">
 
         {/* Top gradient bar */}
-        <div className="h-1.5 bg-gradient-to-r from-blue-500 via-blue-600 to-indigo-600" />
+        <div className="h-1 bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400" />
 
         <div className="px-8 pt-7 pb-8 flex flex-col items-center text-center">
 
           {/* Badge */}
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200 dark:bg-amber-900/20 dark:text-amber-400 dark:border-amber-800 mb-6">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-400/15 text-amber-300 border border-amber-400/30 mb-6">
             <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
             </svg>
@@ -43,10 +43,10 @@ function WelcomeModal({ onClose }) {
 
           {/* Avatar */}
           <div className="relative mb-4">
-            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-700 flex items-center justify-center shadow-lg shadow-blue-500/30">
+            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-blue-400 to-indigo-600 flex items-center justify-center shadow-xl shadow-blue-500/40">
               <span className="text-2xl font-black text-white tracking-tight">ZQ</span>
             </div>
-            <div className="absolute -bottom-2 -right-2 w-7 h-7 rounded-full bg-green-500 border-2 border-white dark:border-gray-900 flex items-center justify-center shadow-sm">
+            <div className="absolute -bottom-2 -right-2 w-7 h-7 rounded-full bg-emerald-400 border-2 border-white/20 flex items-center justify-center shadow-md">
               <svg className="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
               </svg>
@@ -54,19 +54,19 @@ function WelcomeModal({ onClose }) {
           </div>
 
           {/* Name & role */}
-          <h2 className="text-2xl font-black text-gray-900 dark:text-white tracking-tight mb-0.5">
+          <h2 className="text-2xl font-black text-white tracking-tight mb-0.5">
             Zaur Qurbanov
           </h2>
-          <p className="text-sm font-semibold text-blue-600 dark:text-blue-400 mb-4">
+          <p className="text-sm font-semibold text-blue-300 mb-4">
             Full Stack Developer
           </p>
 
           {/* Description */}
-          <div className="bg-gray-50 dark:bg-gray-800/60 rounded-2xl px-5 py-4 mb-5 border border-gray-100 dark:border-gray-700">
-            <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
-              Bu layihə <span className="font-semibold text-gray-900 dark:text-white">tamamilə öyrənmə məqsədilə</span> yazılmışdır.{' '}
+          <div className="bg-white/8 rounded-2xl px-5 py-4 mb-5 border border-white/10">
+            <p className="text-sm text-white/70 leading-relaxed">
+              Bu layihə <span className="font-semibold text-white">tamamilə öyrənmə məqsədilə</span> yazılmışdır.{' '}
               React, Node.js və süni intellekt inteqrasiyası üzrə bacarıqlarımı nümayiş etdirən{' '}
-              <span className="font-semibold text-blue-600 dark:text-blue-400">portfolio işidir</span>.
+              <span className="font-semibold text-blue-300">portfolio işidir</span>.
             </p>
           </div>
 
@@ -75,7 +75,7 @@ function WelcomeModal({ onClose }) {
             {techs.map((tech) => (
               <span
                 key={tech}
-                className="px-2.5 py-1 text-xs font-medium bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 rounded-lg border border-blue-100 dark:border-blue-800"
+                className="px-2.5 py-1 text-xs font-medium bg-blue-400/15 text-blue-200 rounded-lg border border-blue-400/20"
               >
                 {tech}
               </span>
@@ -88,7 +88,7 @@ function WelcomeModal({ onClose }) {
               href="https://github.com/zaurqurbanov"
               target="_blank"
               rel="noreferrer"
-              className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gray-900 dark:bg-gray-700 text-white text-sm font-semibold hover:bg-gray-700 dark:hover:bg-gray-600 active:scale-95 transition-all duration-150 shadow-sm"
+              className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-white/10 border border-white/15 text-white text-sm font-semibold hover:bg-white/15 active:scale-95 transition-all duration-150"
             >
               <GitHubIcon />
               GitHub
@@ -97,7 +97,7 @@ function WelcomeModal({ onClose }) {
               href="https://www.linkedin.com/in/zaurqurbanov"
               target="_blank"
               rel="noreferrer"
-              className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#0A66C2] text-white text-sm font-semibold hover:bg-[#004182] active:scale-95 transition-all duration-150 shadow-sm"
+              className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#0A66C2]/80 border border-blue-400/30 text-white text-sm font-semibold hover:bg-[#0A66C2] active:scale-95 transition-all duration-150"
             >
               <LinkedInIcon />
               LinkedIn
@@ -107,7 +107,7 @@ function WelcomeModal({ onClose }) {
           {/* CTA */}
           <button
             onClick={onClose}
-            className="w-full py-3.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold text-sm hover:opacity-90 active:scale-[0.98] transition-all duration-150 shadow-lg shadow-blue-500/25 flex items-center justify-center gap-2"
+            className="w-full py-3.5 rounded-xl bg-gradient-to-r from-blue-500 to-indigo-500 text-white font-bold text-sm hover:from-blue-400 hover:to-indigo-400 active:scale-[0.98] transition-all duration-150 shadow-lg shadow-blue-500/30 flex items-center justify-center gap-2"
           >
             Çata başla
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
